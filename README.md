@@ -18,6 +18,7 @@ TODO
 ## Base62 (Alphanumeric)
 
 _Ratio (practice): 11/8 (137.5%) compared to binary_
+
 _Ratio (theory): lg(62)/lg(256) (~134%) compared to binary_
 
 When only alphanumeric characters are acceptable, yet Base32 is not compact enough, Base62 is the go-to encoding.
