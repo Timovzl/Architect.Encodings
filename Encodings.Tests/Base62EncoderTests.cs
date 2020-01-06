@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using System.Runtime.InteropServices;
 using System.Text;
 using Xunit;
 
@@ -361,7 +362,7 @@ namespace Architect.Encodings.Tests
 		[InlineData("AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB")] // 8x32
 		public void TryToBase62CharsAndTryFromBase62Chars_Regularly_ShouldProvideOriginalText(string text)
 		{
-			var inputChars = Encoding.UTF8.GetBytes(text);
+			var inputChars = Encoding.UTF8.GetBytes(text).AsSpan();
 			Span<byte> outputChars = stackalloc byte[inputChars.Length];
 
 			Span<byte> bytes = stackalloc byte[Base62Encoder.GetBase62Length(inputChars.Length)];
@@ -373,7 +374,43 @@ namespace Architect.Encodings.Tests
 			Assert.True(decodingSucceeded);
 			Assert.Equal(outputChars.Length, bytesWritten);
 
-			Assert.True(outputChars.SequenceEqual(outputChars));
+			Assert.True(inputChars.SequenceEqual(outputChars));
+		}
+
+		[Theory]
+		[InlineData(0UL)]
+		[InlineData(1UL << 0)]
+		[InlineData(1UL << 1)]
+		[InlineData(1UL << 2)]
+		[InlineData(1UL << 3)]
+		[InlineData(1UL << 4)]
+		[InlineData(1UL << 5)]
+		[InlineData(1UL << 6)]
+		[InlineData(1UL << 7)]
+		[InlineData(1UL << 8)]
+		[InlineData(1UL << 9)]
+		[InlineData(1UL << 10)]
+		[InlineData(1UL << 31)]
+		[InlineData(1UL << 63)]
+		[InlineData((1UL << 31) - 12345)]
+		[InlineData((1UL << 63) - 12345)]
+		[InlineData(UInt64.MaxValue)]
+		public void TryToBase62CharsAndTryFromBase62Chars_WithUlongValue_ShouldProvideOriginalText(ulong input)
+		{
+			var ulongs = MemoryMarshal.CreateReadOnlySpan(ref input, 1);
+			var inputBytes = MemoryMarshal.AsBytes(ulongs);
+			Span<byte> outputChars = stackalloc byte[inputBytes.Length];
+
+			Span<byte> bytes = stackalloc byte[Base62Encoder.GetBase62Length(inputBytes.Length)];
+			var encodingSucceeded = Base62Encoder.TryToBase62Chars(inputBytes, bytes, out var charsWritten);
+			Assert.True(encodingSucceeded);
+			Assert.Equal(bytes.Length, charsWritten);
+
+			var decodingSucceeded = Base62Encoder.TryFromBase62Chars(bytes, outputChars, out var bytesWritten);
+			Assert.True(decodingSucceeded);
+			Assert.Equal(outputChars.Length, bytesWritten);
+
+			Assert.True(inputBytes.SequenceEqual(outputChars));
 		}
 
 		[Theory]
@@ -400,7 +437,7 @@ namespace Architect.Encodings.Tests
 			// Use chars 66 through 127, to see if that works
 			var alphabet = new Base62Alphabet(Enumerable.Range(127 - 61, 62).Select(i => (byte)i).ToArray());
 
-			var inputChars = Encoding.UTF8.GetBytes(text);
+			var inputChars = Encoding.UTF8.GetBytes(text).AsSpan();
 			Span<byte> outputChars = stackalloc byte[inputChars.Length];
 
 			Span<byte> bytes = stackalloc byte[Base62Encoder.GetBase62Length(inputChars.Length)];
@@ -412,7 +449,7 @@ namespace Architect.Encodings.Tests
 			Assert.True(decodingSucceeded);
 			Assert.Equal(outputChars.Length, bytesWritten);
 
-			Assert.True(outputChars.SequenceEqual(outputChars));
+			Assert.True(inputChars.SequenceEqual(outputChars));
 		}
 
 		[Theory]
