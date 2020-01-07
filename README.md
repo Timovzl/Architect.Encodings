@@ -45,4 +45,35 @@ Considering that the 32-byte implementation is less performant and much harder t
 
 Taking all of the above into consideration, we can consider the **8-byte implementation** to be the superior standard.
 
-**The second question** is which bytes should be represented by which characters. For intuitive purposes, each character should be in the same relative position as the byte(s) it represents. Therefore, changes to the input data will be reflected by similar changes to the output data. For example, if the last byte's value is increased by 1, the last one or two output characters will represent that increase by 1. (It should be noted that, because we perform integer divisions on blocks of 8 bytes / 11 characters, any characters in the same block that are to the _right_ of the directly affected may be affected as well.)
+**The second question** is which bytes should be represented by which characters. For intuitive purposes, each character should be in the same relative position as the byte(s) it represents. Therefore, changes to the input data will be reflected by similar changes to the output data.
+
+Let's look at a few examples.
+
+- [] is encoded as ""
+- [49] is encoded as "0n"
+- [49, 50, 51, 52, 53, 54, 55, 56, 57, 48, 49] is encoded as "4DruweP3xQ80Fizp"
+
+Blocks shorter than 11 bytes omit characters that they do not require.
+
+What happens if we increase the last byte's value by 1?
+
+- [49, 50, 51] is encoded as "0DWjr"
+- [49, 50, 52] is encoded as "0DWjs"
+- [49, 50, 255] is encoded as "0DWn9"
+
+We can see that the change to the last byte affects the last character pair. The delta of only 1 increases "jr" to "js", whereas the delta of 203 increases "js" to "n9", affecting the higher order character of the pair as well. Note that none of the characters to the left are related to the third byte's value.
+
+- [49, 50, 51] is encoded as "0DWjr"
+- [255, 50, 51] is encoded as "18AoV"
+
+So why was the entire block affected when we only changed the first byte's value? This is because we are treating the block as a large integer, which we repeatedly divide by 62. A change anywhere in a block can affect any output to right as well. Let's see that confirmed when we change only the middle byte.
+
+- [49, 50, 51] is encoded as "0DWjr"
+- [49, 255, 51] is encoded as "0DkOJ"
+
+Indeed, any characters to the right of the change are affected as well, but characters to its left are not. Luckily, this effect is bounded by its block:
+
+- [49, 49, 49, 49, 49, 49, 49, 49, 50, 50, 50, 50, 50, 50, 50, 50] is encoded as "4DqcOBOWbth 4JBw9Ubg8Is" (space for explanation purposes only)
+- [88, 49, 49, 49, 49, 49, 49, 49, 50, 50, 50, 50, 50, 50, 50, 50] is encoded as "7ZRZjtdklpx 4JBw9Ubg8Is" (space for explanation purposes only)
+
+We have 8 bytes with value 49 (the first block) and another 8 with value 50 (the second block). When we change the first 49 value to 88, we see that the entire first output block (i.e. the first 11 characters) changes completely, while the second block remains unaffected.
