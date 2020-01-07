@@ -27,7 +27,7 @@ _Space (theory): lg(62)/lg(256) (~134%) compared to binary_
 
 When only alphanumeric characters are acceptable, yet Base32 is not compact enough, Base62 is the go-to encoding.
 
-Since there is no official standard for Base62, I have proposed the carefully crafted structure outlined here to the [Internet Engineering Task Force](https://ietf.org/).
+Since there is no official standard for Base62, I have proposed the carefully designed structure outlined below to the [Internet Engineering Task Force](https://ietf.org/).
 
 Base62 uses the characters of Base64, except the symbols and the padding character. That leaves it requiring slightly more space, but more importantly, much harder to implement. Whereas Base64 represents 6 bits per character (and Base32 represents 5 bits per character), Base62 represents about 5.95419631039 bits per character. This is a challenge, as it is hard to represent partial bits. Rather, Base62 interprets a series of bytes as a large integer in base-2 and converts it to base-62 using integer division.
 
