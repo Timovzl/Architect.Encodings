@@ -29,7 +29,9 @@ When only alphanumeric characters are acceptable, yet Base32 is not compact enou
 
 Since there is no official standard for Base62 yet, I have proposed the carefully designed structure outlined below to the [Internet Engineering Task Force](https://ietf.org/).
 
-Base62 uses the characters of Base64, except for its symbols and padding character. That leaves it in need of slightly more space, but more importantly, much harder to implement. Whereas Base64 represents 6 bits per character (and Base32 represents 5 bits per character), Base62 represents about 5.95419631039 bits per character, in theory. This is a challenge, as it is hard to represent partial bits. Rather, Base62 interprets a series of bytes as a large integer in base-2 and converts it to base-62 using repeated integer divisions, where the remainders form the Base62 character values.
+Base62 uses the characters of Base64, except for its symbols and padding character, and in a different order. The alphabet, representing the values 0 through 61 respectively, is 0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz. It follows ASCII order.
+
+The reduced character set leaves Base62 in need of slightly more space, but more importantly, much harder to implement. Whereas Base64 represents 6 bits per character (and Base32 represents 5 bits per character), Base62 represents about 5.95419631039 bits per character, in theory. This is a challenge, as it is hard to represent partial bits. Rather, Base62 interprets a series of bytes as a large integer in base-2 and converts it to base-62 using repeated integer divisions, where the remainders form the Base62 character values.
 
 Since there is no power of 62 that coincides with a power of 2, there is no non-zero number of bytes that requires exactly a _whole_ number of Base62 characters to represent. And since integer divisions on unbounded input lengths are infeasible, that introduces the need for an imperfect block size. For example, a block of 8 bytes requires about 10.7487 characters in theory. In practice, we might use 11 characters to represent it, wasting a bit of space.
 
