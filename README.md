@@ -3,23 +3,27 @@ Provides various mechanisms for encoding binary data.
 
 ## Base64
 
-_Ratio: 8/6 (~133%) compared to binary_
+_Space: 8/6 (~133%) compared to binary_
 
 Since Base64 is included in .NET through the Convert class, it is not included in this library. However, it is mentioned for completeness of this overview.
 
 ## Base32
 
+_Space: 8/5 (160%) compared to binary_
+
 TODO
 
 ## Base16 (Hexadecimal)
+
+_Space: 2/1 (200%) compared to binary_
 
 TODO
 
 ## Base62 (Alphanumeric)
 
-_Ratio (practice): 11/8 (137.5%) compared to binary_
+_Space (practice): 11/8 (137.5%) compared to binary_
 
-_Ratio (theory): lg(62)/lg(256) (~134%) compared to binary_
+_Space (theory): lg(62)/lg(256) (~134%) compared to binary_
 
 When only alphanumeric characters are acceptable, yet Base32 is not compact enough, Base62 is the go-to encoding.
 
