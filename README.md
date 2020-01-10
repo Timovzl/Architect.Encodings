@@ -7,6 +7,12 @@ _Space: 4/3 (~133%) compared to binary_
 
 Since Base64 is included in .NET through the Convert class, it is not included in this library. However, it is mentioned for completeness of this overview.
 
+## Base64URL
+
+_Space: 4/3 (~133%) compared to binary_
+
+TODO
+
 ## Base32
 
 _Space: 8/5 (160%) compared to binary_
