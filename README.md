@@ -3,7 +3,7 @@ Provides various mechanisms for encoding binary data.
 
 ## Base64
 
-_Space: 8/6 (~133%) compared to binary_
+_Space: 4/3 (~133%) compared to binary_
 
 Since Base64 is included in .NET through the Convert class, it is not included in this library. However, it is mentioned for completeness of this overview.
 
